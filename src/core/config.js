@@ -26,18 +26,47 @@ class Config {
     };
   }
 
+  // Deep merge helper function for nested objects
+  deepMerge(target, source) {
+    const output = { ...target };
+    
+    if (isObject(target) && isObject(source)) {
+      Object.keys(source).forEach(key => {
+        if (isObject(source[key])) {
+          if (!(key in target)) {
+            output[key] = source[key];
+          } else {
+            output[key] = this.deepMerge(target[key], source[key]);
+          }
+        } else {
+          output[key] = source[key];
+        }
+      });
+    }
+    
+    return output;
+    
+    function isObject(item) {
+      return (item && typeof item === 'object' && !Array.isArray(item));
+    }
+  }
+
   loadFromFile(configPath) {
     try {
       const fileContents = fs.readFileSync(configPath, 'utf8');
       const extension = path.extname(configPath).toLowerCase();
+      let loadedConfig;
       
       if (extension === '.json') {
-        this.config = { ...this.config, ...JSON.parse(fileContents) };
+        loadedConfig = JSON.parse(fileContents);
       } else if (['.yml', '.yaml'].includes(extension)) {
-        this.config = { ...this.config, ...yaml.parse(fileContents) };
+        loadedConfig = yaml.parse(fileContents);
       } else {
         throw new Error(`Unsupported configuration file format: ${extension}`);
       }
+      
+      // Use deep merge to preserve nested properties
+      this.config = this.deepMerge(this.config, loadedConfig);
       
       console.log('Configuration loaded successfully');
       return true;
