@@ -1,0 +1,29 @@
+{
+  "name": "polyfunc",
+  "version": "0.1.0",
+  "description": "A framework that dynamically selects the best programming language for microservices",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src tests",
+    "start": "node src/cli/index.js"
+  },
+  "keywords": [
+    "microservices",
+    "llm",
+    "code-generation",
+    "multi-language"
+  ],
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "commander": "^11.1.0",
+    "openai": "^4.93.0",
+    "yaml": "^2.7.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0"
+  }
+}

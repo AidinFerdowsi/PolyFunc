@@ -1,0 +1,40 @@
+{
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-4"
+  },
+  "languages": {
+    "javascript": {
+      "priority": 1,
+      "useCase": [
+        "web",
+        "api"
+      ]
+    },
+    "python": {
+      "priority": 2,
+      "useCase": [
+        "data",
+        "ml"
+      ]
+    },
+    "go": {
+      "priority": 3,
+      "useCase": [
+        "performance",
+        "concurrency"
+      ]
+    },
+    "rust": {
+      "priority": 4,
+      "useCase": [
+        "system",
+        "performance"
+      ]
+    }
+  },
+  "paths": {
+    "services": "./services",
+    "templates": "./templates"
+  }
+}
