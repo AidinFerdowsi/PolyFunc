@@ -10,17 +10,10 @@ const config = require('../core/config');
 const llm = require('../llm/client');
 const languageProfiles = require('../languages/profile');
 
-const program = new commander.Command();
-
-program
-  .version('0.1.0')
-  .description('PolyFunc - Microservice Framework with Smart Language Selection');
-
-// Initialize command
-program
-  .command('init')
-  .description('Initialize a new PolyFunc project')
-  .action(async () => {
+// Export handlers for testing
+const handlers = {
+  // Initialize command handler
+  async init() {
     try {
       console.log('Initializing a new PolyFunc project...');
       
@@ -43,13 +36,10 @@ program
     } catch (error) {
       console.error('Failed to initialize project:', error);
     }
-  });
-
-// Analyze requirements command
-program
-  .command('analyze <description>')
-  .description('Analyze requirements from a service description')
-  .action(async (description) => {
+  },
+  
+  // Analyze requirements command handler
+  async analyze(description) {
     try {
       console.log('Analyzing requirements...');
       const requirements = await llm.analyzeRequirements(description);
@@ -70,13 +60,10 @@ program
     } catch (error) {
       console.error('Error analyzing requirements:', error);
     }
-  });
-
-// Decompose service command
-program
-  .command('decompose <description>')
-  .description('Decompose a service into microservices')
-  .action(async (description) => {
+  },
+  
+  // Decompose service command handler
+  async decompose(description) {
     try {
       console.log('Decomposing service...');
       const microservices = await llm.decomposeService(description);
@@ -91,14 +78,10 @@ program
     } catch (error) {
       console.error('Error decomposing service:', error);
     }
-  });
-
-// Create service command
-program
-  .command('create <description>')
-  .description('Create a new microservice from description')
-  .option('-l, --language <language>', 'Force a specific programming language')
-  .action(async (description, options) => {
+  },
+  
+  // Create service command handler
+  async create(description, options = {}) {
     try {
       console.log('Creating new microservice...');
       
@@ -157,13 +140,10 @@ program
     } catch (error) {
       console.error('Error creating service:', error);
     }
-  });
-
-// List language profiles command
-program
-  .command('languages')
-  .description('List available language profiles')
-  .action(() => {
+  },
+  
+  // List language profiles command handler
+  languages() {
     console.log('Available language profiles:');
     for (const [name, profile] of Object.entries(languageProfiles.profiles)) {
       console.log(`\n${name.toUpperCase()}:`);
@@ -179,11 +159,55 @@ program
           console.log(`    ${useCase.name}: ${useCase.score}/10`);
         });
     }
-  });
+  }
+};
 
-program.parse(process.argv);
+// Setup CLI commands
+const program = new commander.Command();
 
-// Show help if no arguments
-if (!process.argv.slice(2).length) {
-  program.outputHelp();
+program
+  .version('0.1.0')
+  .description('PolyFunc - Microservice Framework with Smart Language Selection');
+
+// Initialize command
+program
+  .command('init')
+  .description('Initialize a new PolyFunc project')
+  .action(handlers.init);
+
+// Analyze requirements command
+program
+  .command('analyze <description>')
+  .description('Analyze requirements from a service description')
+  .action(handlers.analyze);
+
+// Decompose service command
+program
+  .command('decompose <description>')
+  .description('Decompose a service into microservices')
+  .action(handlers.decompose);
+
+// Create service command
+program
+  .command('create <description>')
+  .description('Create a new microservice from description')
+  .option('-l, --language <language>', 'Force a specific programming language')
+  .action(handlers.create);
+
+// List language profiles command
+program
+  .command('languages')
+  .description('List available language profiles')
+  .action(handlers.languages);
+
+// Only parse argv when this file is run directly, not when required
+if (require.main === module) {
+  program.parse(process.argv);
+  
+  // Show help if no arguments
+  if (!process.argv.slice(2).length) {
+    program.outputHelp();
+  }
 }
+
+module.exports = { handlers, program };
